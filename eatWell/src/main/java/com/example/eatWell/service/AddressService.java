@@ -2,6 +2,7 @@ package com.example.eatWell.service;
 
 
 import com.example.eatWell.dto.response.AddressResponse;
+import com.example.eatWell.exception.NoAddressFoundException;
 import com.example.eatWell.model.Address;
 import com.example.eatWell.repository.AddressRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +42,6 @@ public class AddressService {
 
     }
 
-    public List<Address> getAllAddress(){
-        return addressRepo.findAll();
-    }
-
-//    Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-//    pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-//    Page<Merchant> allMerchantList = merchantRepository.findAll(pageable);
-
     public Page<AddressResponse> getAllAddress(Pageable pageable){
         Sort sort=Sort.by(Sort.Direction.DESC, "Country");
         pageable=PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), sort);
@@ -65,7 +58,7 @@ public class AddressService {
 
 
     //Some uses of regix and mongo template
-    public AddressResponse getAddressByPhoneNumber(String phoneNumber){
+    public AddressResponse getAddressByPhoneNumber(String phoneNumber) throws NoAddressFoundException {
           Address address= addressRepo.findByPhoneNumber(phoneNumber);
           return new AddressResponse(address.getAddressId(),address.getPhoneNumber(),address.getAddressLine1(),
                   address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode());

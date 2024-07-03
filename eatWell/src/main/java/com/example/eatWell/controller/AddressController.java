@@ -27,44 +27,50 @@ public class AddressController {
 
 
     @PostMapping("/save")
-    public String  saveAddress(@Valid @RequestBody AddressCreateRequest addressCreateRequest){
+    public ResponseEntity<ResponseDTO<?>>  saveAddress(@Valid @RequestBody AddressCreateRequest addressCreateRequest){
+        try {
+            addressService.saveAddress(addressCreateRequest.getPhoneNumber(),addressCreateRequest.getAddressLine1()
+                    ,addressCreateRequest.getAddressLine2(), addressCreateRequest.getCity(), addressCreateRequest.getState(),
+                    addressCreateRequest.getCountry(),addressCreateRequest.getPincode());
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString()).
+                    body("Address saved successfully").build());
 
-        addressService.saveAddress(addressCreateRequest.getPhoneNumber(),addressCreateRequest.getAddressLine1()
-        ,addressCreateRequest.getAddressLine2(), addressCreateRequest.getCity(), addressCreateRequest.getState(),
-                addressCreateRequest.getCountry(),addressCreateRequest.getPincode());
-        return "success";
-        //return new ResponseEntity<>("address saved successfully", HttpStatus.OK);
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.builder().status(HttpStatus.NOT_FOUND.toString())
+                    .body(e.getMessage()).build());
+        }
+
     }
 
     @PostMapping("/saveAll")
-    public String  saveAllAddress(@RequestBody List<Address> addressList){
+    public ResponseEntity<ResponseDTO<?>>  saveAllAddress(@RequestBody List<Address> addressList){
 
         addressService.saveAllAddress(addressList);
-        return "success";
-        //return new ResponseEntity<>("address saved successfully", HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString()).
+                body("All address saved successfully").build());
+
     }
-    @GetMapping("/all")
-    public ResponseEntity<?> getAllAddress(){
-        List<Address> addresses = addressService.getAllAddress();
-        return new ResponseEntity<>(addresses,HttpStatus.OK);
-    }
-//    return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString())
-//            .body(merchantService.merchantList(pageable)).build());
+
     @GetMapping("/list")
-    public ResponseEntity<ResponseDTO<?>> getAllAddress1(Pageable pageable){
+    public ResponseEntity<ResponseDTO<?>> getAllAddress(Pageable pageable){
         return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString())
                 .body(addressService.getAllAddress(pageable)).build());
 
     }
 
-    @GetMapping("/mobileNumber")
-    public AddressResponse getAddressByMobileNumber(@RequestParam String mobileNumber)throws NoAddressFoundException{
-        AddressResponse addressResponse = addressService.getAddressByPhoneNumber(mobileNumber);
-        if(addressResponse==null){
-            throw new NoAddressFoundException();
+    @GetMapping("/phoneNumber")
+    public ResponseEntity<ResponseDTO<?>> getAddressByMobileNumber(@RequestParam String phoneNumber){
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString())
+                    .body(addressService.getAddressByPhoneNumber(phoneNumber)).build());
+
+        } catch(NoAddressFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.builder().status(HttpStatus.NOT_FOUND.toString())
+                    .body("No Address found with given Number").build());
         }
 
-        return addressResponse;
+
+
     }
 
 
