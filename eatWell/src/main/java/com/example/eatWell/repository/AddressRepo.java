@@ -13,7 +13,7 @@ public interface AddressRepo extends MongoRepository<Address, String> {
 
 
 
-
+   Address findByPhoneNumber(String mobileNumber);
 
     List<Address> findByPincode(Integer pincode);
 

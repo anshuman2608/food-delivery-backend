@@ -23,12 +23,12 @@ public class Address {
     private String city;
     private String state;
     private String country;
-    private Integer pincode;
+    private String pincode;
     private Long createTime;
     private Long updateTime;
 
     public Address(String phoneNumber, String addressLine1, String addressLine2, String city,
-                   String state, String country, Integer pincode) {
+                   String state, String country, String pincode) {
         this.phoneNumber = phoneNumber;
         this.addressLine1 = addressLine1;
         this.addressLine2 = addressLine2;

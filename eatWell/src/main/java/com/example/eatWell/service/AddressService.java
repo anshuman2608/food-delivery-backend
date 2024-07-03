@@ -1,14 +1,21 @@
 package com.example.eatWell.service;
 
 
+import com.example.eatWell.dto.response.AddressResponse;
 import com.example.eatWell.model.Address;
 import com.example.eatWell.repository.AddressRepo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.support.PageableExecutionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,9 +29,10 @@ public class AddressService {
     private AddressRepo addressRepo;
 
 
-    public void saveAddress(Address address){
+    public void saveAddress(String phoneNumber,String addressLine1, String addressLine2,
+                            String city, String state, String country, String pincode){
 
-        addressRepo.save(address);
+        addressRepo.save(new Address(phoneNumber,addressLine1,addressLine2,city,state,country,pincode));
 
     }
 
@@ -37,8 +45,36 @@ public class AddressService {
         return addressRepo.findAll();
     }
 
+//    Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+//    pageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+//    Page<Merchant> allMerchantList = merchantRepository.findAll(pageable);
+
+    public Page<AddressResponse> getAllAddress(Pageable pageable){
+        Sort sort=Sort.by(Sort.Direction.DESC, "Country");
+        pageable=PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), sort);
+        Page<Address> allAddress= addressRepo.findAll(pageable);
+        List<AddressResponse> addressResponsesList= new ArrayList<>();
+
+        allAddress.forEach(address -> {
+            addressResponsesList.add(new AddressResponse(address.getAddressId(),address.getPhoneNumber(), address.getAddressLine1()
+            ,address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode()));
+        });
+
+        return PageableExecutionUtils.getPage(addressResponsesList,allAddress.getPageable(),allAddress::getTotalElements);
+    }
+
 
     //Some uses of regix and mongo template
+    public AddressResponse getAddressByPhoneNumber(String phoneNumber){
+          Address address= addressRepo.findByPhoneNumber(phoneNumber);
+          return new AddressResponse(address.getAddressId(),address.getPhoneNumber(),address.getAddressLine1(),
+                  address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode());
+    }
+
+
+
+
+
 
     public List<Address> getAddressByPindoce(int pincode){
         Query query=new Query();
