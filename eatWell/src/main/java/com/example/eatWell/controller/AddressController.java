@@ -54,7 +54,6 @@ public class AddressController {
                     .body(e.getMessage()).build());
         }
 
-
     }
 
     @GetMapping("/list")
