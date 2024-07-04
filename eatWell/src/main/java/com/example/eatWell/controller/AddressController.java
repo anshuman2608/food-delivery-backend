@@ -36,7 +36,7 @@ public class AddressController {
                     body("Address saved successfully").build());
 
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.builder().status(HttpStatus.NOT_FOUND.toString())
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseDTO.builder().status(HttpStatus.CONFLICT.toString())
                     .body(e.getMessage()).build());
         }
 
@@ -44,18 +44,28 @@ public class AddressController {
 
     @PostMapping("/saveAll")
     public ResponseEntity<ResponseDTO<?>>  saveAllAddress(@RequestBody List<Address> addressList){
+        try{
+            addressService.saveAllAddress(addressList);
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString()).
+                    body("All address saved successfully").build());
 
-        addressService.saveAllAddress(addressList);
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString()).
-                body("All address saved successfully").build());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseDTO.builder().status(HttpStatus.CONFLICT.toString())
+                    .body(e.getMessage()).build());
+        }
+
 
     }
 
     @GetMapping("/list")
     public ResponseEntity<ResponseDTO<?>> getAllAddress(Pageable pageable){
-        return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString())
-                .body(addressService.getAllAddress(pageable)).build());
-
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString())
+                    .body(addressService.getAllAddress(pageable)).build());
+        }catch (NoAddressFoundException e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseDTO.builder().status(HttpStatus.CONFLICT.toString())
+                    .body(e.getMessage()).build());
+        }
     }
 
     @GetMapping("/phoneNumber")
@@ -66,23 +76,24 @@ public class AddressController {
 
         } catch(NoAddressFoundException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.builder().status(HttpStatus.NOT_FOUND.toString())
-                    .body("No Address found with given Number").build());
+                    .body(e.getMessage()).build());
         }
 
 
 
     }
-
-
-
-
-
-
-
-
     @GetMapping("/pincode")
-    public List<Address>  getAddressByPincode(@RequestParam int pincode){
-        return addressService.getAddressByPindoce(pincode);
+    public ResponseEntity<ResponseDTO<?>>  getAddressByPincode(@RequestParam String pincode,Pageable pageable){
+        try {
+            //return addressService.getAddressByPindoce(pincode);
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString())
+                    .body(addressService.getAddressByPincode(pincode,pageable)).build());
+
+        }catch (NoAddressFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDTO.builder().status(HttpStatus.NOT_FOUND.toString())
+                    .body(e.getMessage()).build());
+        }
+
     }
 
 

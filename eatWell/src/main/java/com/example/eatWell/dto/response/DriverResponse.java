@@ -5,22 +5,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class AddressResponse {
+@NoArgsConstructor
+public class DriverResponse {
 
 
-    private String addressId;
+
+    private String id;
+    private String name;
     private String phoneNumber;
-    private String addressLine1;
-    private String addressLine2;
-    private String city;
-    private String state;
-    private String country;
-    private String pincode;
+    private String location;
     private long createTime;
     private long updateTime;
+
 }

@@ -19,8 +19,18 @@ public class Driver {
     private String id;
 
     private String name;
-    private String phone;
+    private String phoneNumber;
     private String location;
+    private long createTime;
+    private long updateTime;
 
-    // Constructors, getters, setters
+
+    public Driver(String name,String phoneNumber,String location){
+        this.name=name;
+        this.phoneNumber=phoneNumber;
+        this.location=location;
+        this.createTime=System.currentTimeMillis();
+        this.updateTime=System.currentTimeMillis();
+
+    }
 }

@@ -42,7 +42,7 @@ public class AddressService {
 
     }
 
-    public Page<AddressResponse> getAllAddress(Pageable pageable){
+    public Page<AddressResponse> getAllAddress(Pageable pageable) throws NoAddressFoundException{
         Sort sort=Sort.by(Sort.Direction.DESC, "Country");
         pageable=PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(), sort);
         Page<Address> allAddress= addressRepo.findAll(pageable);
@@ -50,7 +50,7 @@ public class AddressService {
 
         allAddress.forEach(address -> {
             addressResponsesList.add(new AddressResponse(address.getAddressId(),address.getPhoneNumber(), address.getAddressLine1()
-            ,address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode()));
+            ,address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode(),address.getCreateTime(),address.getUpdateTime()));
         });
 
         return PageableExecutionUtils.getPage(addressResponsesList,allAddress.getPageable(),allAddress::getTotalElements);
@@ -58,21 +58,41 @@ public class AddressService {
 
 
     //Some uses of regix and mongo template
-    public AddressResponse getAddressByPhoneNumber(String phoneNumber) throws NoAddressFoundException {
-          Address address= addressRepo.findByPhoneNumber(phoneNumber);
-          return new AddressResponse(address.getAddressId(),address.getPhoneNumber(),address.getAddressLine1(),
-                  address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode());
+//    public AddressResponse getAddressByPhoneNumber(String phoneNumber) throws NoAddressFoundException {
+//          Address address= addressRepo.findByPhoneNumber(phoneNumber);
+//          return new AddressResponse(address.getAddressId(),address.getPhoneNumber(),address.getAddressLine1(),
+//                  address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode());
+//    }
+
+    public List<AddressResponse> getAddressByPhoneNumber(String phoneNumber) throws NoAddressFoundException {
+        List<Address> addressList= addressRepo.findByPhoneNumber(phoneNumber);
+        List<AddressResponse> addressResponsesList=new ArrayList<>();
+        addressList.forEach(address -> {
+            addressResponsesList.add(new AddressResponse(address.getAddressId(),address.getPhoneNumber(),address.getAddressLine1(),
+                    address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode(),address.getCreateTime(),address.getUpdateTime()));
+        });
+        return addressResponsesList;
     }
 
+//    public List<Address> getAddressByPincode(String pincode) throws NoAddressFoundException{
+//        Query query=new Query();
+//        query.addCriteria(Criteria.where("pincode").is(pincode));
+//        return mongoTemplate.find(query,Address.class);
+//    }
+
+    public Page<AddressResponse> getAddressByPincode(String pincode, Pageable pageable) throws NoAddressFoundException{
+        Sort sort=Sort.by(Sort.Direction.DESC,"country");
+        pageable=PageRequest.of(pageable.getPageNumber(),pageable.getPageSize(),sort);
+
+        Page<Address> addressList= addressRepo.findByPincode(pincode,pageable);
+        List<AddressResponse> addressResponseList=new ArrayList<>();
+        addressList.forEach(address -> {
+            addressResponseList.add(new AddressResponse(address.getAddressId(),address.getPhoneNumber(), address.getAddressLine1()
+                    ,address.getAddressLine2(),address.getCity(),address.getState(),address.getCountry(),address.getPincode(),address.getCreateTime(),address.getUpdateTime()));
+        });
+        return PageableExecutionUtils.getPage(addressResponseList,addressList.getPageable(),addressList::getTotalElements);
 
 
-
-
-
-    public List<Address> getAddressByPindoce(int pincode){
-        Query query=new Query();
-        query.addCriteria(Criteria.where("pincode").is(pincode));
-        return mongoTemplate.find(query,Address.class);
     }
 
 

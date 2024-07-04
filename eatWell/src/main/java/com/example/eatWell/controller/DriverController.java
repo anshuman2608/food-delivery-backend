@@ -1,13 +1,14 @@
 package com.example.eatWell.controller;
 
 
+import com.example.eatWell.dto.request.DriverCreateRequest;
+import com.example.eatWell.dto.response.ResponseDTO;
 import com.example.eatWell.model.Driver;
 import com.example.eatWell.service.DriverService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,16 +20,34 @@ public class DriverController {
     DriverService driverService;
 
     @PostMapping("/save")
-    public String saveDriver(@RequestBody Driver driver){
+    public ResponseEntity<ResponseDTO<?>> saveDriver(@RequestBody DriverCreateRequest driverCreateRequest){
+        try {
+            driverService.saveDriver(driverCreateRequest.getName(),driverCreateRequest.getPhoneNumber(),driverCreateRequest.getLocation());
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString())
+                    .body("Driver saved successfully").build());
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseDTO.builder().status(HttpStatus.CONFLICT.toString())
+                    .body(e.getMessage()).build());
+        }
 
-        driverService.saveDriver(driver);
-        return "driver saved";
     }
 
     @PostMapping("/saveAll")
-    public String saveAllDriver(@RequestBody List<Driver> driverList){
+    public ResponseEntity<ResponseDTO<?>> saveAllDriver(@RequestBody List<Driver> driverList){
 
-        driverService.saveAllDriver(driverList);
-        return "driver saved";
+        try {
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.builder().status(HttpStatus.OK.toString())
+                    .body(driverService.saveAllDriver(driverList)).build());
+
+        }catch(Exception e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(ResponseDTO.builder().status(HttpStatus.CONFLICT.toString())
+                    .body(e.getMessage()).build());
+        }
     }
+
+//    @PutMapping("/update")
+//    public  ResponseEntity<ResponseDTO<?>> driverUpdate()
+
+
+
 }

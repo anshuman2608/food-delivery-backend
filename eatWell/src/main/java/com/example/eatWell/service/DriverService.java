@@ -1,5 +1,6 @@
 package com.example.eatWell.service;
 
+import com.example.eatWell.dto.request.DriverCreateRequest;
 import com.example.eatWell.model.Driver;
 import com.example.eatWell.repository.DriverRepo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,10 @@ public class DriverService {
     DriverRepo driverRepo;
 
 
-    public String  saveDriver(Driver driver){
-        driverRepo.save(driver);
-        return "Driver saved successfully";
+    public void  saveDriver(String name, String phoneNumber, String location){
+
+        driverRepo.save(new Driver(name,phoneNumber,location));
+
     }
 
 

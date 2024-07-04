@@ -1,6 +1,8 @@
 package com.example.eatWell.repository;
 
 import com.example.eatWell.model.Address;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -13,9 +15,11 @@ public interface AddressRepo extends MongoRepository<Address, String> {
 
 
 
-   Address findByPhoneNumber(String mobileNumber);
+   //Address findByPhoneNumber(String phoneNumber);
 
-    List<Address> findByPincode(Integer pincode);
+   List<Address> findByPhoneNumber(String phoneNumber);
+
+    Page<Address> findByPincode(String pincode, Pageable pageable);
 
     List<Address> findByCountry(String country);
 
